@@ -1,14 +1,17 @@
-import { Controller, Query, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Query, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger/dist';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
+@ApiTags('courses')
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
+    console.log(createCourseDto)
     return this.coursesService.create(createCourseDto);
   }
 
