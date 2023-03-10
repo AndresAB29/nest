@@ -1,30 +1,39 @@
-import { Controller, Query, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger/dist';
+import { Controller, Query, Get, Post, Body, Patch, Bind, Param, Delete, UsePipes, ValidationPipe, HttpStatus, HttpException, ParseIntPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger/dist';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @ApiTags('courses')
+@ApiBearerAuth()
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(private readonly coursesService: CoursesService) { }
 
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
-    console.log(createCourseDto)
+    const { price } = createCourseDto;
+    if (isNaN(price) || price === 0) {
+      throw new HttpException('No puede ser cero el precio', HttpStatus.BAD_GATEWAY)
+    }
     return this.coursesService.create(createCourseDto);
   }
 
   @Get()
-  findAll(@Query('id') id:string) {
+  findAll(@Query('id') id: string) {
     console.log(id);
     return this.coursesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Bind(
+    Param('id', new ParseIntPipe({
+      errorHttpStatusCode:HttpStatus.NOT_ACCEPTABLE
+    }))
+  )
+  findOne(id:number) {
     console.log(id)
-    return this.coursesService.findOne(+id);
+    return this.coursesService.findOne(id);
   }
 
   @Patch(':id')
