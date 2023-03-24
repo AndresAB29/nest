@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger/dist';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { SlugPipe } from './pipes/slug/slug.pipe';
 
 @ApiTags('courses')
 @ApiBearerAuth()
@@ -25,6 +26,11 @@ export class CoursesController {
     return this.coursesService.findAll();
   }
 
+  @Get()
+  exampleSettings(){
+    return this.coursesService.Hello();
+  }
+
   @Get(':id')
   @Bind(
     Param('id', new ParseIntPipe({
@@ -34,6 +40,11 @@ export class CoursesController {
   findOne(id:number) {
     console.log(id)
     return this.coursesService.findOne(id);
+  }
+
+  @Get('types/:type')
+  getType(@Param('type', new SlugPipe()) type:string){
+    return this.coursesService.findType(type)
   }
 
   @Patch(':id')

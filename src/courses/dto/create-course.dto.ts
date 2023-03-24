@@ -16,7 +16,6 @@ export class CreateCourseDto {
     
     @ApiProperty()
     
-    @IsNotEmpty()
     price: number;
     
     @ApiProperty()
